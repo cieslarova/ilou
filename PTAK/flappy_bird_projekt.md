@@ -27,3 +27,22 @@ Hra se rozšířila o překážky letící z pravé strany obrazovky na levou. H
   - **Detekce kolizí:** Je využita třída `pygame.Rect` obalující souřadnice ptáka i trubek do samostatných obdélníků, nad kterými je volána dedikovaná matematická knihovní funkce `colliderect()` počítající průsečík dvou čtverců.
   - **Restart hry:** Oddělení herního stavu do pomocné stavové proměnné `hra_bezi` na kterou reaguje herní loop vyhodnocováním (hráč žije = počítá se fyzika kolizí i skóre / hráč nežije = okno čeká na stisk mezerníku a zavolání vytvořené resetovací funkce do původního stavu).
 * **Nové proměnné a prvky:** Proměnné pro rozměry a posouvání trubek na ose X a celkové herní skóre, plus grafické vykreslení (rendering) písma ve formátu z knihovny `pygame.font`.
+
+---
+
+# Flappy Pták - Fáze 3
+
+## Popis a cíl projektu
+Ve třetí fázi byla přidána profesionálnější struktura programu zahrnující úvodní interaktivní menu s instrukcemi a zadáním uživatelského jména. Dále byl implementován systém perzistentního ukládání nejvyššího dosaženého skóre (Top 3) do externího textového souboru na disku, takže se výsledky zachovají i po vypnutí okna. Zapracována byla i možnost dočasné pauzy během hraní.
+
+## Funkcionalita programu
+Po spuštění se nově zobrazí `Modrá obloha` s názvem hry a seznamem instrukcí k ovládání. Hra hráče vyzve k zadání jména na klávesnici (vykresluje se okamžitě a lze mazat backspacem). Ke spuštění hry se používá klávesa Enter. Ve hře přibyla možnost stisknout mezerník k pozastavení fyziky (pauza). Pokud hráč zemře, jeho skóre je (pokud dosahuje dostatečných kvalit) bezpečně nahráno na disk a po stisku klávesy R pro novou hru je načteno zpět pro zobrazení motivace "Rekord".
+
+## Technická část
+* **Použité knihovny:** Přidána systémová knihovna `os`, která slouží k prozkoumání disku před nabootováním enginu, aby se hra nepokusila otevírat a načítat neexistující soubor.
+* **Datové struktury:** 
+  - Využití žebříčku prostřednictvím pole (list) ukládajícího n-tici (Tuple) ve formátu (Jméno, Zisk). List se při každém zápisu dynamicky formátuje a seřazuje `lambda` expresí a seká výhradně pod třetím indexem za pomoci List operátoru Slice `[:3]`.
+* **Rozšíření algoritmů a Refaktoring:**
+  - **Uživatelský vstup:** Odposlouchávání systémových Key-Eventů a čtení stisknutých kláves z PyGame s přidáním na globální řetězec `jmeno_hrace`.
+  - **Bezpečný zápis souborů:** Pro otevírání souboru se skóre blokem `with open` byl aktivně zapojen Exception handling (`try-except`) na ochranu stability, pokud by programu chybělo pověření (práva) nebo by byl soubor porušen manuálně (ValueError).
+  - **Architektura:** Celkový monolitický kód jedné smyčky z Fáze 2 byl logicky rozštípnul do menších oddělených podfunkcí jako `pauza()`, `herni_smycka()`, či `zobraz_menu()`. Herní smyčka může být díky tomu znovu volána bez restartu samotné aplikace.
