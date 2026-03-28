@@ -8,3 +8,4 @@
 | 02 | Regulární výrazy (REGULAR) | 2026-03-09 | Regulární výrazy pro validaci textových vstupů (např. e-mail, telefonní číslo, PSČ atd.) |
 | 03 | Košík (KOSIK) | 2026-03-11 | Jezdící a skákací košík, který sbírá padající jídlo |
 | 04 | Flappy Pták (PTAK) | 2026-03-16 | Hra ve stylu Flappy Bird napsaná v Pygame |
+| 05 | Tetris (TETRIS) | 2026-03-28 | Klasická hra Tetris s postupnými fázemi vývoje |

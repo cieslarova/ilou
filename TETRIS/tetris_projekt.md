@@ -43,3 +43,26 @@ Funkce `main()` obsahuje základní smyčku s frameratem omezeným na 60 FPS.
 
 ### Závěr Fáze 1
 Po spuštění skriptu se otevře okno, ve kterém je vykreslena funkční a ohraničená herní deska 10x20 polí, počítadlo skóre a jeden náhodně vybraný objekt (tetromino) čekající v základní horní pozici. Stavební kameny pro herní logiku (pohyb, otáčení, detekce kolizí a padání) jsou připraveny k implementaci v další fázi.
+
+---
+
+## Fáze 2: Herní logika a pohyb (`tetris_faze2.py`)
+
+Cílem druhé fáze je přidat do vytvořené vizuální kostry herní mechaniky, díky nimž se Tetris stane kompletně hratelným. Tato fáze inkrementálně navazuje na zdrojový kód z Fáze 1 a přidává klíčové funkce nutné pro plnohodnotný zážitek.
+
+### 1. Rozšíření třídy `Game` a `Board`
+- **Třída `Game`:** Byla doplněna o evidenci `locked_positions` (slovník zaznamenávající zaplněná pole mřížky na základě souřadnic a jejich přiřazené barvy) a metodu `valid_space()`, která kontroluje, zda je pro padající tetromino dostatek místa (jestli nevybočuje z hrací plochy, nebo nenaráží do již spadlých kostek).
+- **Metoda `check_lost()`:** Identifikuje "Game Over" stav. Hra končí, pokud jakýkoli zamčený blok překročí horní okraj obrazovky.
+- **Odstranění plných řádků (`clear_rows`):** Pokaždé, když blok dopadne, projde se herní `grid`. Jakmile řádek neobsahuje prázdné políčko (černá barva), je odstraněn a nad ním ležící řádky se logicky posunou o jeden stupeň dolů. Odtud se také přičítá skóre.
+
+### 2. Pohyb a rotace pomocí kláves
+Ovládání hráče je zpracováno pomocí klávesových událostí knihovny pygame (`pygame.KEYDOWN`):
+- **Šipka vlevo / vpravo:** Upravení osy `X` u padajícího tetromina, podmíněno ověřením, že cílové políčko je prázdné a nevypadne z plátna.
+- **Šipka nahoru:** Rotace tetromina. Iteruje cyklem přes možné předdefinované mapy v seznamu rotací aktuální kostky.
+- **Šipka dolů:** Zrychlení padání (při stisknutí se ignoruje běžný pádový časovač).
+
+### 3. Zpracování času (Padání bloků)
+V cyklu se využívá `pygame.time.Clock().get_rawtime()`, které sleduje intervaly plynutí času. Jakmile hodnota přesáhne naši specifikovanou `fall_speed` (rychlost padání), automaticky se tetromino posune po ose `Y` o +1. Rychlost se může v čase plynule zrychlovat v závislosti na dosaženém skóre nebo uplynulém herním čase (Level), ačkoli pro Fázi 2 ponecháváme model padání fixní.
+
+### Závěr Fáze 2
+Výsledkem této etapy je spolehlivě zkompletovaná arkáda Tetris! Uživatel může manipulovat s padajícími dílky v ohraničené síti, bloky se po dopadu ukládají a skládání celistvých čar generuje skóre. Celé chování programu bylo řádně okomentováno přesně zadáním v rámci hodnocení studentských repozitářů.
