@@ -66,3 +66,26 @@ V cyklu se využívá `pygame.time.Clock().get_rawtime()`, které sleduje interv
 
 ### Závěr Fáze 2
 Výsledkem této etapy je spolehlivě zkompletovaná arkáda Tetris! Uživatel může manipulovat s padajícími dílky v ohraničené síti, bloky se po dopadu ukládají a skládání celistvých čar generuje skóre. Celé chování programu bylo řádně okomentováno přesně zadáním v rámci hodnocení studentských repozitářů.
+
+---
+
+## Fáze 3: Nabídka, pauza a ukládání skóre (`tetris_faze3.py`)
+
+Cílem třetí fáze je poskytnout hráči ucelenější uživatelský zážitek a profesionálnější chování aplikace, než jaké nabízel jednoduchý nekonečný cyklus z Fáze 2. Program se obohatil o možnost představit se, pozastavit průběh hry a porovnat své úspěchy na žebříčku nejlepších.
+
+### 1. Úvodní Menu a zadávání jména
+- Při spuštění skriptu se objeví `zobraz_menu()`, která hráče přivítá názvem titulu a výukou ovládání.
+- Uživatelský vstup zachytává klávesy (`pygame.KEYDOWN`) do proměnné typu String. Je možná i korekce překlepů pomocí `Backspace`.
+- Jakmile hráč stiskne `Enter`, začíná samotná hra.
+
+### 2. Pauza a Game Over Screen
+- Během plnohodnotné hry lze stisknout `Mezerník` (`SPACE`), čímž se vyvolá funkce `pauza()`. Ta vnoří program do podcyklu čekajícího pouze na další znovustisknutí Mezerníku, čímž pozastaví ubíhání jakýchkoli herních hodin a padání kostek.
+- Při prohře je hra zachycena a hráč zůstává na obrazovce Game Over. Jsou mu nabídnuty dvě volby: `M - Návrat do Menu` nebo `R - Restart`. Zde byla také ošetřena dřívější chyba okamžitého pádu samotné aplikace. 
+
+### 3. Záznam nejvyššího skóre (I/O operace)
+- Při detekci prohry se automaticky přistupuje na pevný disk skrz modul `os`. 
+- Kód přečte, roztřídí Top 3 a uloží hráče na základě jeho dosažených bodů napříč sezeními. Uskladnění probíhá pomocí jednoduché serializace do `skore.txt` (formát `Jméno,Punkty`).
+- Žebříček nejlepších je zobrazen spolu se stavem "Game Over", čímž dává hráči silný motiv znovu se pokusit o překonání rekordu.
+
+### Závěr Fáze 3
+Aplikace díky logickému rozdělení cyklů mezi "Main Menu", "Hra" a "Pauza" již nepůsobí jen jako testovací plocha enginu, nýbrž jako dokončený a soběstačný herní produkt zabalující veškeré dílčí koncepty předchozích fází do sjednoceného balíčku (Příběhový rámec/Leaderboardy).
