@@ -1,35 +1,48 @@
-# Dokumentace k projektu: Piškvorky (Fáze 1)
+# Dokumentace k projektu: Piškvorky
 
-Tento dokument slouží jako popis první vývojové fáze (soubor `piskvorky_faze1.py`) hry Piškvorky. V této počáteční fázi byly naprogramovány základní kameny pro pozdější interaktivní hru v terminálu, tedy samotná struktura hráčů, hrací plochy (mřížky) a nezbytná řídicí logika hry (propojení polí s hráči).
+Tento dokument mapuje vývoj hry Piškvorky a průběžně popisuje její jednotlivé fáze.
 
-## Architektura kódu
+---
 
-Projekt je postaven na principech objektově orientovaného programování (OOP) a rozdělen do tří hlavních tříd:
+## Fáze 1: Základní stavební kameny
+*(Soubor: `piskvorky_faze1.py`)*
 
-### 1. Třída `Player` (Hráč)
-Slouží k reprezentaci jednoho hráče (účastníka) hry.
-* **Atribut `name`**: Jméno nebo přezdívka hráče.
-* **Atribut `symbol`**: Povolený symbol zobrazení na herní ploše (standardně křížek "X" nebo kolečko "O").
-* **Metoda `__init__`**: Přiřazuje hráči zadané jméno a symbol přímo při vytvoření instance třidy.
-* **Metoda `__str__`**: Vrací "lidsky čitelnou" reprezentaci objektu (např. *Hráč: Hráč 1, Symbol: X*).
+V první fázi byly naprogramovány základní kameny pro pozdější interaktivní hru v terminálu: samotná struktura hráčů, hrací plochy (mřížky) a nezbytná řídicí logika hry (propojení polí s hráči).
 
-### 2. Třída `Board` (Hrací plocha)
-Obstarává ukládání stavu jednotlivých políček (mřížky 3x3).
-* **Atribut `grid`**: Pro ukládání samotné hrací plochy, která je uložena jako seznam seznamů (2D pole neboli matice). Inicializuje se jako tabulka 3x3 s 9 prázdnými prvky oddělenými mezerou.
-* **Metoda `display`**: Vypíše (vyrenderuje) formálnější zobrazení matice `grid` do terminálu. Využívá pomocný výpisový formát společně se svislými (`|`) i vodorovnými (`---+---+---`) dělícími čarami.
+### Architektura kódu
+Projekt je postaven na principech objektově orientovaného programování (OOP) a rozdělen do tří hlavních tříd.
+1. **Třída `Player` (Hráč)**
+   * **Atribut `name`**: Jméno nebo přezdívka hráče.
+   * **Atribut `symbol`**: Povolený symbol zobrazení na herní ploše (standardně křížek "X" nebo kolečko "O").
+   * **Metoda `__init__`**: Přiřazuje hráči zadané jméno a symbol přímo při vytvoření instance třidy.
+2. **Třída `Board` (Hrací plocha)**
+   * **Atribut `grid`**: Pro ukládání samotné hrací plochy (matice 3x3). Inicializuje se jako tabulka s 9 prázdnými prvky oddělenými mezerou.
+   * **Metoda `display`**: Vypíše (vyrenderuje) formálnější zobrazení matice `grid` do terminálu.
+3. **Třída `Game` (Logika a řízení hry)**
+   * Sločovací bod hry, inicializuje instanci `Board` (hrací plochu) a 2 instance `Player`. Má metodu `start_game`, která pouze zkušebně zobrazí prázdnou vymazanou hrací plochu.
 
-### 3. Třída `Game` (Logika a řízení hry)
-Sloučovací bod hry, kontroluje hráče i plochu a spravuje jejich provázanost.
-* **Složení hry**: V inicializaci (`__init__`) vytvoří instanci `Board` (hrací plochu) a vygeneruje 2 instance `Player` (tedy hráče s "X" a hráče s "O").
-* **Atribut `current_player`**: Ujistí se, který z dvojice hráčů je zrovna oprávněně na tahu (na startu typicky Hráč 1).
-* **Metoda `start_game`**: Cílí pouze na zkušební vizualizaci (ukázku aktuální situace v první vývojové fázi), přičemž zobrazí prázdnou vymazanou hrací plochu.
+---
 
-## Konec souboru
-Logika startu aplikace se ukrývá v bloku `if __name__ == "__main__":`. Zamezuje se tím nežádoucímu nechtěnému spuštění hry (pokud se kód programu případně importuje jinde do jiného souboru). Odsud dojde přímo na spuštění přes `game = Game()` a volání `game.start_game()`.
+## Fáze 2: Interaktivní herní smyčka
+*(Soubor: `piskvorky_faze2.py`)*
 
-## Další kroky - co bude obnášet Fáze 2
-Z této výchozí kostry se hra musí doplnit o základní interakci a interaktivní životní cyklus hry:
-1. **Získávání vstupu**: Zeptat se uživatele (pomocí funkce `input`), kam chce hrát na jakou souřadnici.
-2. **Herní smyčka (`while`)**: Hra nesmí skončit hned po zobrazení sítě, ale musí se nekonečně dotazovat tak dlouho dokud jeden z hráčů neprohraje nebo nedojde k remíze.
-3. **Střídání tahů (Alternace)**: Po platném tahu se musí přepnout atribut `current_player`.
-4. **Logika výhry / Remízy**: Kontrola po každém provedeném umístění na šachovnici, jestli není splněna vítězná situace 3 v řadě (horizontálně, vertikálně nebo diagonálně).
+Ve druhé fázi se projekt rozšířil o získávaní vstupů a životní cyklus programu. Hra již nekončí po prvním vykreslení plochy, ale cyklicky se dotazuje hráčů na jejich tah.
+
+### Nové a upravené funkce
+1. **Třída `Board` - vkládání tahů:**
+   * **`make_move(row, col, symbol)`**: Nová funkce obstarává tah. Přijme souřadnice od hráče, ověří, zda jsou v povoleném rozsahu `0-2` (aby nezadal neexistující políčko) a jestli tam náhodou už něco není. Pokud jsou podmínky splněny, znak se úspěšně vykreslí (vrátí `True`).
+2. **Třída `Game` - interakce:**
+   * **Atribut `game_over`**: Nová proměnná s hodnotou Boolean (`False`), která funguje jako přepínač držící herní smyčku aktivní.
+   * **`get_player_move()`**: Ošetřený `while True` cyklus, který nutí hráče zadávat pomocí `input()` řádek i sloupec doté doby, než zadá platné číslo. Blokem `try-except` se brání spadnutí programu ve chvíli, kdyby hráč napsal omylem místo čísla například písmeno.
+   * **`switch_player()`**: Rychlá a stručná funkce na prostřídání tahů obou protivníků (předá `current_player` druhému ze dvojice).
+   * **`run()`**: Původní metodu *start_game* spouští plnohodnotná herní smyčka. Metoda udržuje program neustále v chodu a prohazuje tahy.
+
+### Konec souboru a spouštění
+Logika spuštění se stále ukrývá v bloku `if __name__ == "__main__":`. Zamezuje se tím nežádoucímu autostartu. Ve fázi 2 je samotné spuštění odesláno přes `game = Game()` a spuštěním samotné smyčky pomocí aktivační funkce `game.run()`.
+
+---
+
+## Další kroky - co bude obnášet Fáze 3
+Zatím hra postrádá jakéhokoliv arbitra. Pro finální Fázi 3 bude třeba přidat:
+1. **Logika výhry a kontroly**: Po každém úspěšném tahu se musí prohledat tabulka matice, zda tam neexistuje vítězná situace 3 v řadě (horizontální kontrola, vertikální kontrola, nebo kontrola úhlopříček - diagonálně).
+2. **Ukončení hry (Remíza a Výhra)**: Rozpoznat situaci kdy nezbyde už žádné volné prázdné pole, anebo kdy padne vítěz, a následně cyklus `run()` zastavit změněním `game_over` na hodnotu `True`.
