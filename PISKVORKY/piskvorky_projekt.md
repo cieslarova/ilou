@@ -37,12 +37,22 @@ Ve druhé fázi se projekt rozšířil o získávaní vstupů a životní cyklus
    * **`switch_player()`**: Rychlá a stručná funkce na prostřídání tahů obou protivníků (předá `current_player` druhému ze dvojice).
    * **`run()`**: Původní metodu *start_game* spouští plnohodnotná herní smyčka. Metoda udržuje program neustále v chodu a prohazuje tahy.
 
-### Konec souboru a spouštění
-Logika spuštění se stále ukrývá v bloku `if __name__ == "__main__":`. Zamezuje se tím nežádoucímu autostartu. Ve fázi 2 je samotné spuštění odesláno přes `game = Game()` a spuštěním samotné smyčky pomocí aktivační funkce `game.run()`.
-
 ---
 
-## Další kroky - co bude obnášet Fáze 3
-Zatím hra postrádá jakéhokoliv arbitra. Pro finální Fázi 3 bude třeba přidat:
-1. **Logika výhry a kontroly**: Po každém úspěšném tahu se musí prohledat tabulka matice, zda tam neexistuje vítězná situace 3 v řadě (horizontální kontrola, vertikální kontrola, nebo kontrola úhlopříček - diagonálně).
-2. **Ukončení hry (Remíza a Výhra)**: Rozpoznat situaci kdy nezbyde už žádné volné prázdné pole, anebo kdy padne vítěz, a následně cyklus `run()` zastavit změněním `game_over` na hodnotu `True`.
+## Fáze 3: Vyhodnocování výhry a ukončení hry
+*(Soubor: `piskvorky_faze3.py`)*
+
+Třetí (konečná) verze hry přináší kompletní funkční pravidla. Po každém odehraném tahu program v reálném čase zkontroluje, jestli nebyla naplněna podmínka pro výhru (tři stejné znaky za sebou) nebo naopak remízu (zcela plné hrací pole bez volného místa).
+
+### Přidané kontrolní metody
+1. **Třída `Board` - kontroly:**
+   * **`check_win(symbol)`**: Tato metoda prohledává herní plán a snaží se objevit symbol 3x v řadě na celkem 4 typech míst:
+     * Kontrola všech **řádků**.
+     * Kontrola všech **sloupců**.
+     * Kontrola **hlavní diagonály** (zleva nahoře doprava dolů).
+     * Kontrola **vedlejší diagonály** (zprava nahoře doleva dolů).
+   * **`is_full()`**: Zjišťuje skrze vyhledávání, jestli už není náhodou deska úplně plná. Pokud nikde nestojí mezera `' '` a nikdo doposud přes `check_win` nevyhrál, zahlásí metoda nakonec stav `True` (čímž prokáže plnou plochu).
+   
+2. **Třída `Game` - rozuzlení konců:**
+   * **Změna metody `run()`**: Na samotný chvost kontrolního procesu (místo kde se tahy reálně dělají) navázala metoda logiku testů `check_win` a `is_full` s využitím zjišťovací větve (`if - elif - else`). 
+   Díky tomu jakmile dojde k situaci výhry nebo remízy přes tyto funkce: změní smyčka Boolean přepínač `self.game_over = True`, zahlásí na celou obrazovku výsledek ukončení hry, a vyruší tak konečně čekání uvnitř `while` pro další nekonečné kolo tahů.
