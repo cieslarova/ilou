@@ -65,8 +65,9 @@ class Board:
             bool: True, pokud byl tah platný a proveden, False jinak.
         """
         # Kontrola, zda jsou souřadnice v platném rozsahu.
+        # Nyní interně pracujeme s indexy 0-2 (hráč stiskl 1-3 a my jsme už odečetli jedničku)
         if not (0 <= row < 3 and 0 <= col < 3):
-            print("Chyba: Souřadnice mimo rozsah (0-2 pro řádek i sloupec).")
+            print("Chyba: Souřadnice mimo rozsah (1-3 pro řádek i sloupec).")
             return False
         # Kontrola, zda je políčko již obsazené.
         if self.grid[row][col] != ' ':
@@ -83,7 +84,7 @@ class Board:
 
         Args:
             symbol (str): Symbol hráče ('X' nebo 'O'), jehož vítězství se kontroluje.
-
+  
         Returns:
             bool: True, pokud symbol vyhrál, False jinak.
         """
@@ -162,10 +163,13 @@ class Game:
         """
         while True:
             try:
-                # Vyzve hráče k zadání řádku a sloupce.
-                row = int(input(f"{self.current_player.name} ({self.current_player.symbol}), zadejte řádek (0-2): "))
-                col = int(input(f"{self.current_player.name} ({self.current_player.symbol}), zadejte sloupec (0-2): "))
-                return row, col
+                # Vyzve hráče k zadání řádku a sloupce (1-3).
+                row_input = int(input(f"{self.current_player.name} ({self.current_player.symbol}), zadejte řádek (1-3): "))
+                col_input = int(input(f"{self.current_player.name} ({self.current_player.symbol}), zadejte sloupec (1-3): "))
+                
+                # Uživatel sice zadá 1-3, ale mřížka v Pythonu je číslovaná 0-2.
+                # Proto hned při přijmutí vstupu odečteme jedničku (-1).
+                return row_input - 1, col_input - 1
             except ValueError:
                 # Chyba při zadání nečíselného vstupu.
                 print("Neplatný vstup. Zadejte prosím číslo pro řádek i sloupec.")
