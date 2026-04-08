@@ -1,32 +1,38 @@
-# Dokumentace projektu Coin Collector - Fáze 1
+# Dokumentace projektu Coin Collector
 
-Tento dokument slouží jako technická dokumentace k první fázi projektu hry **Coin Collector** (soubor `coin_collector_faze1.py`), která je postavena na 3D enginu **Panda3D**.
+Tento dokument slouží jako technická dokumentace k projektu hry **Coin Collector**, která je postavena na 3D enginu **Panda3D**.
 
-## Struktura kódu
+## Fáze 1 - Základní vykreslování (`coin_collector_faze1.py`)
 
-Kód programu je plně objektově orientovaný a dělí se do tří hlavních tříd:
+Účelem první fáze bylo otestovat základní architekturu okna, napojení na knihovnu Panda3D, svícení a základní vizualizaci těles.
 
-### 1. Třída `Player`
-Představuje hlavní postavu, kterou bude hráč v budoucnu tvořit a ovládat.
-- **Inicializace (`__init__`)**: Přijímá odkaz na nadřazený uzel (`parent_node`), přes který se modely vykreslují.
-- **Model**: Namísto komplexního modelu využívá výchozí model obličeje enginu (`"smiley"`).
-- **Vzhled a pozice**: Model je zmenšen interní funkcí `setScale(0.5)`, zbarven dočervena (`setColor(0.8, 0.2, 0.2, 1)`) a posazen nepatrně nad povrch terénu (`setPos(0, 0, 0.5)`).
+### Struktura kódu (Fáze 1)
+Kód programu je objektově orientovaný a dělí se do tří hlavních tříd:
+- **Třída `Player`**: Představuje hráče. Využívá zmenšený, červeně obarvený výchozí model obličeje enginu (`"smiley"`). Nastavuje pouze svou pozici nad terénem.
+- **Třída `Coin`**: Model zastupující sbíratelnou položku (minci). Využívá jednoduchý model kvádru (`"box"`), který je menší velikosti, obarven do žluta a dovoluje inicializaci na specifické náhodné pozici.
+- **Třída `CoinCollectorGame`**: Hlavní třída aplikace dědící od `ShowBase`. Připravuje okno, fixovanou kameru pro ptačí pohled, dvě formy osvětlení (ambientní a směrové), zelený terén tvořený plackou (`"models/plane"`), testovací instanci hráče a statické rozložení mincí na plochu.
 
-### 2. Třída `Coin`
-Objekt zastupující sbíratelnou položku (minci) roztroušenou po mapě.
-- **Inicializace (`__init__`)**: Narozdíl od hráče navíc přijímá parametr `position` ve formě tuple (x,y,z), díky kterému můžeme snadno distribuovat mince.
-- **Model**: Aktuálně se používá jednoduchý kvádr (`"box"`).
-- **Vzhled a pozice**: Model je poměrově menší (`setScale(0.2)`), disponuje zlatistou barvou a je umístěn mírně nad mapou pro viditelnost.
+---
 
-### 3. Třída `CoinCollectorGame`
-Hlavní třída aplikace dědící od `ShowBase`. Překrývá výchozí chování Panda3D modulu a zakládá konkrétní scénu hry.
-- **Konfigurace Okna**: Pozadí se čistí do bleděmodra evokujícího oblohu a do titulků se aplikuje "Coin Collector - Fáze 1".
-- **Kamera**: Fixována z vyvýšené pozice a pohlížející do středu – zajišťuje klasický ptačí pohled nad hřištěm.
-- **Světla (Lighting)**: Ošetřeno dvojím způsobem:
-    1. **Ambientní světlo**: Pro základní neostrou viditelnost těles.
-    2. **Směrové světlo**: Simulující vrhání slunečních stínů z konkrétního úhlu (45° rotace).
-- **Terén (Ground)**: Zeleně obarvená velká plocha (`"models/plane"`) připnutá na souřadnice `(0,0,-0.5)`, aby nekolidovala přímo s centrem scény. Nachází se v ní také pojistka (try/except `CardMaker`) v případě nenačtení předpřipraveného modelu.
-- **Příprava herní smyčky**: Generuje prozatím jednu instanci hráče doprostřed a seznam `self.coins` plní 3 statickými kusy mincí.
+## Fáze 2 - Interaktivita, kolize a skóre (`coin_collector_faze2.py`)
 
-## Účel fáze 1
-Tato fáze slouží výlučně jako testovací render základní architektury do okna, tedy otestování knihovny Panda3D, svícení a viditelnosti objektů. Modifikace vstupu od uživatele pro ovládání míče a odchytávání fyzikálních kolizí na sběr bude součástí až dalších vývojových fází.
+Druhá fáze rozšiřuje předchozí základy programu o reálnou herní logiku: sběr, ovládání, detekce průniků a adaptace scény na chování uživatele. 
+
+### Nové mechanismy a chování
+
+#### 1. Řízení a pohyb a sledování kamerou
+- Třída `Player` byla vybavena proměnnými pro sledování stavu kláves (**W / A / S / D**).
+- Pohyb hráče je aktualizován pravidelně ve snímkové smyčce (`update_movement`) s využitím uběhnutého času (`globalClock.getDt()`). Tím je docíleno plynulého pohybu nezávislého na výkonu počítače.
+- Kamera již není fixována ve statickém pohledu. Metoda `update_camera` neustále přepočítává polohu a umisťuje kameru za hráče a mírně nad něj, s přímým pohledem (`lookAt`) na aktivní postavu.
+
+#### 2. Kolizní modely a fyzikální masky
+- Jak `Player`, tak `Coin` tělesa dostala neviditelné obrysy využívajících sferický hitbox `CollisionSphere`, ukotvený uzlem `CollisionNode`.
+- K optimalizaci průniků jsou zavedeny binární filtry, tzv. bitové masky:
+  - `PLAYER_MASK = BitMask32(0x1)` pro masku hráče
+  - `COIN_MASK = BitMask32(0x2)` pro maskování mincí
+- U hráče je aktivován takzvaný traverser (`CollisionTraverser`). Těleso hráče díky němu pravidelně zkoumá, do jakých objektů narazilo, a ukládá výsledky do fronty odeslaných informací, tzv. `CollisionHandlerQueue` (uvnitř úlohy `check_collisions`).
+
+#### 3. Herní smyčka a nekonečný režim sbírání
+- Pokud detekční vrstva zaznamená protnutí obrysů `player_collision` s objektem `coin_collision`, je dotčená mince programem zničena a uvolněna ze spuštěné scény metodou `removeNode()`.
+- Hra eviduje uživatelské skóre coby celočíselnou proměnnou, jež je překladem vykreslována nástrojem `OnscreenText` v horním rohu herního okna.
+- Účel nekonečného sběru zajišťují reinkarnační schopnosti hry (funkce `spawn_coins`). Jakmile pole aktivních mincí klesne k pomyslné nule a hráč jich sebral všech počátečních 10 kousků, hřiště vygeneruje na náhodných souřadnicích ihned k dispozici další várku čtverečků.
