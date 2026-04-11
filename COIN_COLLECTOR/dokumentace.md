@@ -36,3 +36,24 @@ Druhá fáze rozšiřuje předchozí základy programu o reálnou herní logiku:
 - Pokud detekční vrstva zaznamená protnutí obrysů `player_collision` s objektem `coin_collision`, je dotčená mince programem zničena a uvolněna ze spuštěné scény metodou `removeNode()`.
 - Hra eviduje uživatelské skóre coby celočíselnou proměnnou, jež je překladem vykreslována nástrojem `OnscreenText` v horním rohu herního okna.
 - Účel nekonečného sběru zajišťují reinkarnační schopnosti hry (funkce `spawn_coins`). Jakmile pole aktivních mincí klesne k pomyslné nule a hráč jich sebral všech počátečních 10 kousků, hřiště vygeneruje na náhodných souřadnicích ihned k dispozici další várku čtverečků.
+
+---
+
+## Fáze 3 - Herní stavy, plně funkční sběr a UI (`coin_collector_fate3.py`)
+
+Třetí fáze přidává robustnější logiku ovládání hry, cílové podmínky ukončení hry a ošetření běhových chyb.
+
+### Nové mechanismy a chování
+
+#### 1. Herní stavy a konec hry
+- Z programu byl odstraněn čistě "nekonečný režim". Místo toho byla zavedena proměnná udávající cíl `max_coins_to_collect = 15`.
+- Byl zaveden systém herních stavů prostřednictvím stavové proměnné (např. `"playing"` nebo `"game_over"`). Hráč může ovládat pohyb a spouštět kolize pouze pokud je hra ve stavu `"playing"`.
+- Jakmile je dosaženo cílového skóre, funkce `game_over()` pozastaví ovládání a detekci kolizí vymazáním patřičných úloh (*tasks*) z paměti enginu. Současně se hra přepne do stavu ukončení. 
+
+#### 2. Resetování hry a zpětná vazba
+- U třídy `Player` a ve hře samotné najdeme novou metodu `reset()`, která navrací charakter do původních výchozích souřadnic.
+- Hráči se zobrazují zprávy za pomoci komponenty `OnscreenText` přímo v prostředku obrazovky při ukončení kola, s nabídkou zmáčknutí klávesy **R** pro novou hru (`reset_game()` / `start_game()`).
+- Upraveno načítání vizuálních modelů – aby hra ihned nespadla při případné absenci externích modelů, obsahují třídy bloky `try-except`. Ty dokážou operativně tvořit zástupné polygony (např. programově vytvořený `GeomNode`) nebo v nouzi vybudují desku terénu prostřednictvím modulu `CardMaker`.
+
+#### 3. Oprava a kalibrace hitboxů
+- Z důvodu špatně škálované velikosti objektů v enginu nedocházelo ke kolizím z předchozí fáze. Ve fázi 3 byly u `CollisionSphere` pro minci i hráče záměrně zvětšeny lokální poloměry (1.2 pro hráče a 1.5 pro minci). Protnutí těchto velikostí se skenery je nyní po globálním zmenšení modelu plně ověřeno, objekty tedy bez problémů zaznamenávají dotyk a mince mizí.
