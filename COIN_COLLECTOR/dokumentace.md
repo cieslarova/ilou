@@ -57,3 +57,23 @@ Třetí fáze přidává robustnější logiku ovládání hry, cílové podmín
 
 #### 3. Oprava a kalibrace hitboxů
 - Z důvodu špatně škálované velikosti objektů v enginu nedocházelo ke kolizím z předchozí fáze. Ve fázi 3 byly u `CollisionSphere` pro minci i hráče záměrně zvětšeny lokální poloměry (1.2 pro hráče a 1.5 pro minci). Protnutí těchto velikostí se skenery je nyní po globálním zmenšení modelu plně ověřeno, objekty tedy bez problémů zaznamenávají dotyk a mince mizí.
+
+---
+
+## Fáze 4 - Časomíra a celkové hodnocení hráčova výkonu (`coin_collector_faze4.py`)
+
+Čtvrtá fáze představuje finální iteraci herního režimu, ve kterém byla přidána plná měřitelnost a hodnocení toho, jak si hráč v daném kole vedl.
+
+### Nové mechanismy a chování
+
+#### 1. Měření času
+- Hra využívá zabudovaný manipulátor s časem enginu a pomocí funkce `globalClock.getFrameTime()` zapamatovává přesný čas z momentu, kdy byla hra odstartována (voláno ve `start_game`).
+- Průběžně byla přidána časomíra prostřednictvím UI elementu `OnscreenText`, jež se nachází v levém dolním rohu obrazovky. Pro její aktuálnost byla vytvořena úloha `update_timer`, běžící v pozadí (Task Manager).
+
+#### 2. Závěrečné vyhodnocení (Hodnocení všeho)
+- Kód byl upraven podle zadání na implementaci "hodnocení všeho". Funkce `evaluate_performance` mapuje celkový uběhnutý čas při vítězství na odstupňované hodnocení formátu "známek":
+  - **A:** Excelentní rychlost (do 15 s)
+  - **B:** Dobrá práce (do 25 s)
+  - **C:** Průměrný výkon (do 40 s)
+  - **D:** Na tom se dá zapracovat (více jak 40 s)
+- Zpráva na konci hry, nacházející se pod metodou `game_over`, pak namísto prostého konstatování o sebraných mincích předloží ucelené hodnocení kola - včetně výsledného celkového času a získané známky.

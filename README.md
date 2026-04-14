@@ -10,4 +10,4 @@
 | 04 | Flappy Pták (PTAK) | 2026-03-16 | Hra ve stylu Flappy Bird napsaná v Pygame |
 | 05 | Tetris (TETRIS) | 2026-03-25 | Klasická logická hra skládání padajících bloků |
 | 06 | Piškvorky (PISKVORKY) | 2026-03-30 | Klasická logická hra Piškvorky |
-| 07 | Coin Collector (COIN_COLLECTOR) | 2026-04-08 | 3D hra s mincemi a sbíráním mincí |
+| 07 | Coin Collector (COIN_COLLECTOR) | 2026-04-08 | 3D hra s mincemi a sbíráním mincí (rozšířena o Fázi 4 s časomírou a hodnocením) |
