@@ -29,6 +29,8 @@ for i in range(5):
 # hlavní herní smyčka
 hra_bezi = True
 
+hodiny = pygame.time.Clock()
+
 while hra_bezi:
     for událost in pygame.event.get():
         if událost.type == pygame.QUIT:
@@ -42,6 +44,21 @@ while hra_bezi:
     # tady se pohybují střely
     for strela in strely:
         strela[1] -= 10 # číslo 10 je rychlost střely a 
+
+    # sestřelování ufovů
+    for strela in strely:
+        strela_rect = pygame.Rect(strela[0] + 20, strela[1], 5, 10)
+        
+        for ufon in nepratele:
+            ufon_rect = pygame.Rect(ufon[0], ufon[1], 40, 40)
+            
+            # pokud se střely překrývají srazí se 
+            if strela_rect.colliderect(ufon_rect):
+                if strela in strely:
+                    strely.remove(strela)
+                if ufon in nepratele:    
+                    nepratele.remove(ufon)
+                break
     
 # vykreslení grafiky
     okno.fill((0, 0, 0))
