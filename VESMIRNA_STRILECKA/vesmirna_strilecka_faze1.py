@@ -43,11 +43,11 @@ skore = 0
 
 zdravi = 123
 # font písma aby to bylo pěkné
-font = pygame.font.SysFont("none", 30)
+font = pygame.font.SysFont("cloud bold", 60)
 
 # HLAVNÍ SMYČKA
 while hra_bezi:
-    hodiny.tick(80) # nastaví rychlos na 60 snímků za sekundu
+    hodiny.tick(80) # nastaví rychlos na 80 snímků za sekundu
     if zdravi < 167:
         zdravi += 0.1
     for událost in pygame.event.get():
@@ -87,19 +87,40 @@ while hra_bezi:
         # detekujeme jestli žlutý obdelníček mimozemské střely neplácnul o tvou červenou lod
         strela_u_rect = pygame.Rect(strela_u[0] + 17, strela_u[1], 6, 15)
         if hrac_rect.colliderect(strela_u_rect):
-            zdravi -= 5 # zasáhli tě odečítáme malý život me 
+            zdravi -= 20 # zasáhli tě odečítáme malý život me 
             strely_ufonu.remove(strela_u) # žlutá plazma se vsákne do tvojí lodi a zmizí
             # kontrola konce hry ůplně stejně, jako to máš u osobních smrtáků nahoře
             if zdravi <= 0:
-                napis1 = font.render("Konec hry", True, (255, 50, 50))
-                napis2 = font.render("ufoni ti prostříleli loď na řešeto!!!", True, (255, 50, 50))
-                napis3 = font.render("skore: " + str(skore), True, (255, 50, 50))
-                okno.blit(napis1, (330, 300))
-                okno.blit(napis2, (200, 350))
-                okno.blit(napis3, (330, 400))
+                napis1 = font.render("GAME OVER", True, (255, 50, 50))
+                okno.blit(napis1, (275, 300))
+                
                 pygame.display.update()
-                pygame.time.wait(5000)
-                hra_bezi = False
+
+                # můžeme resetovat hru
+                napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
+                okno.blit(napis4, (195, 400))
+
+                pygame.display.update()
+
+                cekani = True
+                while cekani:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            hra_bezi = False
+                            cekani = False
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_RETURN: # Pokud zmáčknem R, znova oživneme!
+                                zdravi = 167           # Dala sis nový max!
+                                skore = 0              # Body naštvaně zase do nuly
+                                nepratele = []         # Smažeme všechny fujtajblový Ufony na mapě 
+                                strely = []          
+                                strely_ufonu = []
+                                hrac_x = 375           # Osobní teleport lodě zpět domů
+                                hrac_y = 700
+                                cekani = False         # Ukončíme pasivní čekání a jedem rubat dál!
+                            
+                           
+               
     
         
        
@@ -114,15 +135,36 @@ while hra_bezi:
 
                 # tady se 
                
-                napis1 = font.render("Konec hry", True, (255, 50, 50))
-                napis2 = font.render("narazil do tebe ufon nedával si pozor smůůůla!!!", True, (255, 50, 50))
-                napis3 = font.render("skore: " + str(skore), True, (255, 50, 50))
-                okno.blit(napis1, (330, 300))
-                okno.blit(napis2, (135, 350))
-                okno.blit(napis3, (340, 400)) # tady tohle jsou souřadnice kde se objeví text a je to x y 
+                napis1 = font.render("GAME OVER", True, (255, 50, 50))
+                okno.blit(napis1, (275, 300))
+            
+
+                # tady díky toho si můžeme vybrat jestli chceme resetovat hru nebo ukončit
+                napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
+                okno.blit(napis4, (195, 400))
                 pygame.display.update()
-                pygame.time.wait(5000)
-                hra_bezi = False
+
+                cekani = True
+                while cekani:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            hra_bezi = False
+                            cekani = False
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_r: # Pokud zmáčknem R, znova oživneme!
+                                zdravi = 167           # Dala sis nový max!
+                                skore = 0              # Body naštvaně zase do nuly
+                                nepratele = []         # Smažeme všechny fujtajblový Ufony na mapě 
+                                strely = []          
+                                strely_ufonu = []
+                                hrac_x = 375           # Osobní teleport lodě zpět domů
+                                hrac_y = 700
+                                cekani = False         # Ukončíme pasivní čekání a jedem rubat dál!
+                            
+                            elif event.key == pygame.K_q: # Pokud zmáčknem flegmanticky Q, jdeme domů...
+                                hra_bezi = False
+                                cekani = False
+
 
     # 3. Nekoneční ufoni (řeší mizení a rození ufonů, ODDĚLENO ZLEVA!)
     for ufon in nepratele[:]:
