@@ -40,6 +40,7 @@ hra_bezi = True
 hodiny = pygame.time.Clock()
 
 skore = 0
+nej_skore = 0 # tady se mám bude zapisovat nejlepší skore takže vlastně náš rekord 
 
 zdravi = 123
 # font písma aby to bylo pěkné
@@ -77,7 +78,8 @@ while hra_bezi:
                 if ufon in nepratele:    
                     nepratele.remove(ufon)
                     skore += 1 # přičteme bod za zásah ufona
-                break
+                if skore > nej_skore:
+                    nej_skore = skore # tady se má zapsat nejlepší skore
 
     # 2. Game over (řeší jen loď hráče a ufony, ODDĚLENO ZLEVA!)
     hrac_rect = pygame.Rect(hrac_x, hrac_y, hrac_sirka, hrac_vyska)
@@ -93,7 +95,8 @@ while hra_bezi:
             if zdravi <= 0:
                 napis1 = font.render("GAME OVER", True, (255, 50, 50))
                 okno.blit(napis1, (275, 300))
-                
+                napis_smrt = font_rekord.render("REKORD: " + str(nej_skore), True, (255, 255, 255))
+                okno.blit(napis_smrt, (275, 350))
                 pygame.display.update()
 
                 # můžeme resetovat hru
@@ -214,6 +217,11 @@ while hra_bezi:
     # text se skóre
     text = font.render("Skóre: " + str(skore), True, (255, 255, 255))
     okno.blit(text, (10, 10))
+
+    # text s nejlepším skore
+    text = font.render("Rekord: " + str(nej_skore), True, (255, 255, 255))
+    font_rekord = pygame.font.SysFont("cloud bold", 10)
+    okno.blit(text, (580, 10))
     
     # nakreslíme to tvrdé červené pozadí délky 246 
     pygame.draw.rect(okno, (255, 0, 0), (0, 750, 246, 50))
@@ -234,7 +242,11 @@ while hra_bezi:
     # menění souřadnic podle toho kam chceme letět
     if klavesy[pygame.K_LEFT]:
         hrac_x -= hrac_rychlost
+    if klavesy[pygame.K_a]:
+        hrac_x -= hrac_rychlost    
     if klavesy[pygame.K_RIGHT]:
+        hrac_x += hrac_rychlost
+    if klavesy[pygame.K_d]:
         hrac_x += hrac_rychlost
 
 
@@ -247,9 +259,23 @@ while hra_bezi:
     # to samé pro y
     if klavesy[pygame.K_UP]:
         hrac_y -= hrac_rychlost
+    if klavesy[pygame.K_w]:
+        hrac_y -= hrac_rychlost    
     if klavesy[pygame.K_DOWN]:
         hrac_y += hrac_rychlost
+    if klavesy[pygame.K_s]:
+        hrac_y += hrac_rychlost
     
+    # TADY je to kouzlo pro pohyb s WASD!
+    """
+    if klavesy[pygame.K_a]:
+        hrac_x -= hrac_rychlost
+    if klavesy[pygame.K_d]:
+        hrac_x += hrac_rychlost
+    if klavesy[pygame.K_w]:
+        hrac_y -= hrac_rychlost
+    if klavesy[pygame.K_s]:
+        hrac_y += hrac_rychlost
+    """
 # vypnutí 
 pygame.quit()
-
