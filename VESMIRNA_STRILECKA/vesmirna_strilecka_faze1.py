@@ -46,23 +46,54 @@ zdravi = 123
 # font písma aby to bylo pěkné
 font = pygame.font.SysFont("cloud bold", 60)
 
+
+font_menu = pygame.font.SysFont("cloud bold", 60)
+stav = "MENU"
+
+
 # HLAVNÍ SMYČKA
 while hra_bezi:
     hodiny.tick(80) # nastaví rychlos na 80 snímků za sekundu
+    if stav == "MENU":
+        for událost in pygame.event.get():
+            if událost.type == pygame.QUIT:
+                hra_bezi = False
+            if událost.type == pygame.KEYDOWN:
+                if událost.key == pygame.K_SPACE: # enter pro start hrx
+                    stav = "HRA"
+                    odpocet_strely = 0
+                    zdravi = 167
+                    skore = 0
+                    nepratele = []
+                    strely = []
+                    strely_ufonu = []
+                    hrac_x = 375
+                    hrac_y = 700
+
+        # vykreslení menu
+        okno.fill((0, 0, 0))
+        napis_nazev = font_menu.render("VESMÍRNÁ STŘÍLEČKA", True, (0, 255, 0))
+        okno.blit(napis_nazev, (200, 300))
+        napis_start = font_menu.render("START = Mezernik", True, (255, 255, 255))
+        okno.blit(napis_start, (220, 500))
+        napis_nej_skore = font.render("Rekord: " + str(nej_skore), True, (255, 255, 0))
+        okno.blit(napis_nej_skore, (260, 600))
+        pygame.display.update()
+
+        continue # tohle řekne pythonu : přeskoč zbytek smyčky s začni hned od začátku hra se tedy nehybe
+
     if zdravi < 167:
         zdravi += 0.1
     for událost in pygame.event.get():
         if událost.type == pygame.QUIT:
             hra_bezi = False
 
-        # tady děláme to, že když zmáčkneme mezerník, tak se vystřelí
-        if událost.type == pygame.KEYDOWN:
-            if událost.key == pygame.K_SPACE:
-                strely.append([hrac_x, hrac_y])
 
     # tady se pohybují střely
-    for strela in strely:
+    for strela in strely[:]:
         strela[1] -= 10 # číslo 10 je rychlost střely a 
+        if strela[1] < 0:
+            strely.remove(strela)
 
     # 1. Sestřelování ufonů (řeší jen střely a ufony)
     for strela in strely[:]:
@@ -84,7 +115,9 @@ while hra_bezi:
     # 2. Game over (řeší jen loď hráče a ufony, ODDĚLENO ZLEVA!)
     hrac_rect = pygame.Rect(hrac_x, hrac_y, hrac_sirka, hrac_vyska)
     for strela_u in strely_ufonu[:]:
-        strela_u[1] += 7 # rychlost padající ufony půazmy
+        strela_u[1] += 10 # rychlost padající ufony půazmy
+        if strela_u[1] > vyska: 
+            strely_ufonu.remove(strela_u)
 
         # detekujeme jestli žlutý obdelníček mimozemské střely neplácnul o tvou červenou lod
         strela_u_rect = pygame.Rect(strela_u[0] + 17, strela_u[1], 6, 15)
@@ -102,6 +135,8 @@ while hra_bezi:
                 # můžeme resetovat hru
                 napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
                 okno.blit(napis4, (195, 400))
+                napis_menu = font.render("MENU = M", True, (200, 200, 200))
+                okno.blit(napis_menu, (290, 450))
 
                 pygame.display.update()
 
@@ -112,7 +147,11 @@ while hra_bezi:
                             hra_bezi = False
                             cekani = False
                         if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_RETURN: # Pokud zmáčknem R, znova oživneme!
+                            if event.key == pygame.K_m: # klavesa M pro návrat do menu
+                                stav = "MENU"
+                                cekani = False
+                            elif event.key == pygame.K_RETURN: 
+
                                 zdravi = 167           # Dala sis nový max!
                                 skore = 0              # Body naštvaně zase do nuly
                                 nepratele = []         # Smažeme všechny fujtajblový Ufony na mapě 
@@ -145,6 +184,8 @@ while hra_bezi:
                 # tady díky toho si můžeme vybrat jestli chceme resetovat hru nebo ukončit
                 napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
                 okno.blit(napis4, (195, 400))
+                napis_menu = font.render("MENU = M", True, (200, 200, 200))
+                okno.blit(napis_menu, (290, 450))
                 pygame.display.update()
 
                 cekani = True
@@ -154,7 +195,10 @@ while hra_bezi:
                             hra_bezi = False
                             cekani = False
                         if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_r: # Pokud zmáčknem R, znova oživneme!
+                            if event.key == pygame.K_m: # Klávesa M pro návrat do menu
+                                stav = "MENU"
+                                cekani = False
+                            elif event.key == pygame.K_r: # Pokud zmáčknem R, znova oživneme!
                                 zdravi = 167           # Dala sis nový max!
                                 skore = 0              # Body naštvaně zase do nuly
                                 nepratele = []         # Smažeme všechny fujtajblový Ufony na mapě 
@@ -203,6 +247,8 @@ while hra_bezi:
     # další vrstva barev
     for ufon in nepratele:
         rychlost_ufonu = 2 + (skore / 10)
+        if rychlost_ufonu > 6:
+            rychlost_ufonu = 6
         ufon[1] += rychlost_ufonu
         pygame.draw.rect(okno, (0, 255, 0), (ufon[0], ufon[1], 40, 40))
 
@@ -277,5 +323,13 @@ while hra_bezi:
     if klavesy[pygame.K_s]:
         hrac_y += hrac_rychlost
     """
+
+# odpočet do dalšího výstřelu
+    if odpocet_strely > 0:
+        odpocet_strely -=1
+    if klavesy[pygame.K_SPACE] and odpocet_strely == 0:
+        strely.append([hrac_x, hrac_y])
+        odpocet_strely = 10 # jak rychle můžeš za sebou střílet
+
 # vypnutí 
 pygame.quit()
