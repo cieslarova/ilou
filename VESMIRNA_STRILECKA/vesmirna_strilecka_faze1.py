@@ -14,7 +14,7 @@ hrac_y = 700
 hrac_sirka = 50
 hrac_vyska = 50
 hrac_barva = (255, 0, 0)
-hrac_rychlost = 4
+hrac_rychlost = 6
 strely = []
 
 
@@ -27,7 +27,7 @@ strely_ufonu = []
 for i in range(50):
     hvezdy.append([random.randint(0, sirka), random.randint(0, vyska)])
 
-for i in range(5):
+for i in range(1):
     nepratele.append([i * 100 + 50, 50])
 
 # tady létají ufoni
@@ -218,7 +218,7 @@ while hra_bezi:
         if ufon[1] > vyska:
             nepratele.remove(ufon)
             
-    if len(nepratele) < 6:
+    if len(nepratele) < 4:
         nove_x = random.randint(0, sirka - 40)
         nepratele.append([nove_x, -40]) # přidání nového ufona
 
@@ -252,8 +252,8 @@ while hra_bezi:
         ufon[1] += rychlost_ufonu
         pygame.draw.rect(okno, (0, 255, 0), (ufon[0], ufon[1], 40, 40))
 
-        # každý ufon má šanci 1% v každém snímku hry zmáčknou spoušť
-        if random.randint(0, 100) == 1:
+        # každý ufon má šanci 0.83% v každém snímku hry zmáčknou spoušť
+        if random.randint(0, 120) == 1:
             # vystřelí to z jeho pomyslného břích směrwm dolů ke mně
             strely_ufonu.append([ufon[0], ufon[1]])
 
