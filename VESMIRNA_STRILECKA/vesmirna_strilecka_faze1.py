@@ -17,6 +17,16 @@ hrac_barva = (255, 0, 0)
 hrac_rychlost = 6
 strely = []
 
+import os
+adresar = os.path.dirname(__file__)
+
+# tady dávám proměnné načítání obrázku lodi ja
+obrazek_lode = pygame.image.load(os.path.join(adresar, "hrac_lod.png"))
+obrazek_lode = pygame.transform.scale(obrazek_lode, (hrac_sirka, hrac_vyska))
+
+# načítání ufona
+obrazek_ufona = pygame.image.load(os.path.join(adresar, "ufon.png"))
+obrazek_ufona = pygame.transform.scale(obrazek_ufona, (40, 40))
 
 nepratele = []
 
@@ -250,7 +260,7 @@ while hra_bezi:
         if rychlost_ufonu > 6:
             rychlost_ufonu = 6
         ufon[1] += rychlost_ufonu
-        pygame.draw.rect(okno, (0, 255, 0), (ufon[0], ufon[1], 40, 40))
+        okno.blit(obrazek_ufona, (ufon[0], ufon[1]))
 
         # každý ufon má šanci 0.83% v každém snímku hry zmáčknou spoušť
         if random.randint(0, 120) == 1:
@@ -258,7 +268,9 @@ while hra_bezi:
             strely_ufonu.append([ufon[0], ufon[1]])
 
     # nakreslíme hráče
-    pygame.draw.rect(okno, hrac_barva, (hrac_x, hrac_y, hrac_sirka, hrac_vyska))
+        # nakreslíme hráče
+    okno.blit(obrazek_lode, (hrac_x, hrac_y))
+
 
     # text se skóre
     text = font.render("Skóre: " + str(skore), True, (255, 255, 255))
