@@ -21,12 +21,14 @@ import os
 adresar = os.path.dirname(__file__)
 
 # tady dávám proměnné načítání obrázku lodi ja
-obrazek_lode = pygame.image.load(os.path.join(adresar, "hrac_lod.png"))
-obrazek_lode = pygame.transform.scale(obrazek_lode, (hrac_sirka, hrac_vyska))
+obrazek_lode = pygame.image.load(os.path.join(adresar, "hrac_lod.png")).convert_alpha()
+obrazek_lode = pygame.transform.scale(obrazek_lode, (80, 80))
+obrazek_lode.set_colorkey((0, 0, 0)) # Magický trik, který smaže černou!
 
 # načítání ufona
-obrazek_ufona = pygame.image.load(os.path.join(adresar, "ufon.png"))
-obrazek_ufona = pygame.transform.scale(obrazek_ufona, (40, 40))
+obrazek_ufona = pygame.image.load(os.path.join(adresar, "ufon.png")).convert_alpha()
+obrazek_ufona = pygame.transform.scale(obrazek_ufona, (80, 80))
+obrazek_ufona.set_colorkey((0, 0, 0)) # Magický trik, který smaže černou!
 
 nepratele = []
 
@@ -83,11 +85,16 @@ while hra_bezi:
         # vykreslení menu
         okno.fill((0, 0, 0))
         napis_nazev = font_menu.render("VESMÍRNÁ STŘÍLEČKA", True, (0, 255, 0))
-        okno.blit(napis_nazev, (200, 300))
-        napis_start = font_menu.render("START = Mezernik", True, (255, 255, 255))
-        okno.blit(napis_start, (220, 500))
+        okno.blit(napis_nazev, (200, 200))
+        
+        napis_skore = font.render("Zabito ufonů: " + str(skore), True, (200, 200, 255))
+        okno.blit(napis_skore, (260, 350))
+        
         napis_nej_skore = font.render("Rekord: " + str(nej_skore), True, (255, 255, 0))
-        okno.blit(napis_nej_skore, (260, 600))
+        okno.blit(napis_nej_skore, (310, 420))
+        
+        napis_start = font_menu.render("START = Mezernik", True, (255, 255, 255))
+        okno.blit(napis_start, (220, 600))
         pygame.display.update()
 
         continue # tohle řekne pythonu : přeskoč zbytek smyčky s začni hned od začátku hra se tedy nehybe
@@ -137,16 +144,20 @@ while hra_bezi:
             # kontrola konce hry ůplně stejně, jako to máš u osobních smrtáků nahoře
             if zdravi <= 0:
                 napis1 = font.render("GAME OVER", True, (255, 50, 50))
-                okno.blit(napis1, (275, 300))
-                napis_smrt = font_rekord.render("REKORD: " + str(nej_skore), True, (255, 255, 255))
-                okno.blit(napis_smrt, (275, 350))
+                okno.blit(napis1, (275, 250))
+                
+                napis_smrt = font.render("Zabito ufonů: " + str(skore), True, (255, 255, 255))
+                okno.blit(napis_smrt, (230, 320))
+                
+                napis_rekord = font.render("REKORD: " + str(nej_skore), True, (255, 255, 0))
+                okno.blit(napis_rekord, (290, 380))
                 pygame.display.update()
 
                 # můžeme resetovat hru
                 napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
-                okno.blit(napis4, (195, 400))
+                okno.blit(napis4, (195, 480))
                 napis_menu = font.render("MENU = M", True, (200, 200, 200))
-                okno.blit(napis_menu, (290, 450))
+                okno.blit(napis_menu, (290, 540))
 
                 pygame.display.update()
 
@@ -188,14 +199,19 @@ while hra_bezi:
                 # tady se 
                
                 napis1 = font.render("GAME OVER", True, (255, 50, 50))
-                okno.blit(napis1, (275, 300))
-            
+                okno.blit(napis1, (275, 250))
+                
+                napis_smrt = font.render("Zabito ufonů: " + str(skore), True, (255, 255, 255))
+                okno.blit(napis_smrt, (230, 320))
+                
+                napis_rekord = font.render("REKORD: " + str(nej_skore), True, (255, 255, 0))
+                okno.blit(napis_rekord, (290, 380))
 
                 # tady díky toho si můžeme vybrat jestli chceme resetovat hru nebo ukončit
                 napis4 = font.render("HRÁT ZNOVU = Enter", True, (255, 255, 0))
-                okno.blit(napis4, (195, 400))
+                okno.blit(napis4, (195, 480))
                 napis_menu = font.render("MENU = M", True, (200, 200, 200))
-                okno.blit(napis_menu, (290, 450))
+                okno.blit(napis_menu, (290, 540))
                 pygame.display.update()
 
                 cekani = True

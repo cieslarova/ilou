@@ -3,3 +3,5 @@ podminky.md
 tetris_faze.py
 tetris_kod_vysvetleni.md
 poznamky.md
+__pycache__/
+*.pyc
