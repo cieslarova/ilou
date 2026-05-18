@@ -293,10 +293,11 @@ while hra_bezi:
     okno.blit(text, (10, 10))
 
     # text s nejlepším skore
-    text = font.render("Rekord: " + str(nej_skore), True, (255, 255, 255))
-    font_rekord = pygame.font.SysFont("cloud bold", 10)
-    okno.blit(text, (580, 10))
+    font_rekord = pygame.font.SysFont("comicsans", 30) # menší font přímo pro rekord
+    text_rekord = font_rekord.render("Rekord: " + str(nej_skore), True, (255, 255, 0))
+    okno.blit(text_rekord, (10, 50)) # ted diky menšímu fontu krásně vyjde doprava
     
+
     # nakreslíme to tvrdé červené pozadí délky 246 
     pygame.draw.rect(okno, (255, 0, 0), (0, 750, 246, 50))
 
