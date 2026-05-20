@@ -1,3 +1,4 @@
+from random import random
 import pygame
 import random
 
@@ -16,25 +17,29 @@ hrac_vyska = 50
 hrac_barva = (255, 0, 0)
 hrac_rychlost = 6
 strely = []
+lekarnicky = []
+
 
 import os
 adresar = os.path.dirname(__file__)
 
 # tady dávám proměnné načítání obrázku lodi ja
 obrazek_lode = pygame.image.load(os.path.join(adresar, "hrac_lod.png")).convert_alpha()
-obrazek_lode = pygame.transform.scale(obrazek_lode, (80, 80))
+obrazek_lode = pygame.transform.scale(obrazek_lode, (60, 60))
 obrazek_lode.set_colorkey((0, 0, 0)) # Magický trik, který smaže černou!
 
 # načítání ufona
 obrazek_ufona = pygame.image.load(os.path.join(adresar, "ufon.png")).convert_alpha()
-obrazek_ufona = pygame.transform.scale(obrazek_ufona, (80, 80))
+obrazek_ufona = pygame.transform.scale(obrazek_ufona, (55, 55))
 obrazek_ufona.set_colorkey((0, 0, 0)) # Magický trik, který smaže černou!
 
-nepratele = []
+nepratele = [] 
 
 hvezdy = []
 
 strely_ufonu = []
+
+lekarnicka = []
 
 for i in range(50):
     hvezdy.append([random.randint(0, sirka), random.randint(0, vyska)])
@@ -46,9 +51,10 @@ for i in range(1):
     for ufon in nepratele:
         pygame.draw.rect(okno, (0, 255, 0), (ufon[0], ufon[1], 40, 40))
 
-# hlavní herní smyčka
-hra_bezi = True
+# hlavní herní smyčka,
 
+hra_bezi = True
+    
 hodiny = pygame.time.Clock()
 
 skore = 0
@@ -184,8 +190,11 @@ while hra_bezi:
                             
                            
                
-    
-        
+    for lekarnicka in lekarnicky[:]:
+        lekarnicka_rect = pygame.Rect(lekarnicka[0], lekarnicka[1], 20, 30)
+        if hrac_rect.colliderect(lekarnicka_rect):
+            zdravi += 15 # dává ti život
+            lekarnicky.remove(lekarnicka)
        
     for ufon in nepratele[:]:
         ufon_rect = pygame.Rect(ufon[0], ufon[1], 40, 40)
@@ -243,6 +252,16 @@ while hra_bezi:
     for ufon in nepratele[:]:
         if ufon[1] > vyska:
             nepratele.remove(ufon)
+
+    for lekarnicka in lekarnicky[:]:
+        lekarnicka[1] += 3
+        if lekarnicka[1] > vyska:
+            lekarnicky.remove(lekarnicka)
+
+    if random.randint(1,400) ==1:
+        nove_x = random.randint(0, sirka - 40)
+        nove_y = random.randint(1, vyska - 30)
+        lekarnicky.append([nove_x, nove_y, True])
             
     if len(nepratele) < 4:
         nove_x = random.randint(0, sirka - 40)
@@ -262,7 +281,15 @@ while hra_bezi:
         pygame.draw.circle(okno, (255, 255, 255), (hvezda[0], hvezda[1]), 2)
         
 
-    #kreslení střel
+
+
+    # vykreslovani obrazku lekarnicky 
+    obrazek_lekarnicky = pygame.image.load (os.path.join(adresar, "lekarnicka.png")).convert_alpha()
+    obrazek_lekarnicky = pygame.transform.scale(obrazek_lekarnicky, (45, 45))
+    obrazek_lekarnicky.set_colorkey((0,0,0)) # magický trik, který smaže černou
+
+
+        
     for strela in strely:
         pygame.draw.rect(okno, (255, 255, 255), (strela[0] + 20, strela[1], 5, 10))
 
@@ -283,9 +310,20 @@ while hra_bezi:
             # vystřelí to z jeho pomyslného břích směrwm dolů ke mně
             strely_ufonu.append([ufon[0], ufon[1]])
 
+        
+
+
+        
     # nakreslíme hráče
         # nakreslíme hráče
     okno.blit(obrazek_lode, (hrac_x, hrac_y))
+
+    # nakreslíme lekarnicku
+    okno.blit(obrazek_lekarnicky, (45, 45))
+    if lekarnicka_rect.colliderect(lekarnicka_rect):
+        zdravi += 50
+        lekarnicka.remove
+         
 
 
     # text se skóre
@@ -296,7 +334,7 @@ while hra_bezi:
     font_rekord = pygame.font.SysFont("comicsans", 30) # menší font přímo pro rekord
     text_rekord = font_rekord.render("Rekord: " + str(nej_skore), True, (255, 255, 0))
     okno.blit(text_rekord, (10, 50)) # ted diky menšímu fontu krásně vyjde doprava
-    
+
 
     # nakreslíme to tvrdé červené pozadí délky 246 
     pygame.draw.rect(okno, (255, 0, 0), (0, 750, 246, 50))
